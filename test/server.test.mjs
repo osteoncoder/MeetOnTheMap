@@ -7,7 +7,7 @@ import { once } from "node:events";
 import { buildServer } from "../server.mjs";
 
 test("routes, form validation and persistence", async (t) => {
-  const dataDir = await mkdtemp(join(tmpdir(), "breez-test-"));
+  const dataDir = await mkdtemp(join(tmpdir(), "meet-on-the-map-test-"));
   const server = buildServer({ dataDir }).listen(0, "127.0.0.1");
   t.after(async () => {
     await new Promise((resolve) => server.close(resolve));
