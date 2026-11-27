@@ -26,11 +26,20 @@ test("routes, form validation and persistence", async (t) => {
     "/destinations",
     "/destinations/bali",
     "/packages",
-    "/packages/komodo",
+    "/packages/maldives",
     "/media/komodo.webp",
+    "/media/switzerland.webp",
+    "/blog",
+    "/blog/first-time-traveller-checklist",
+    "/booking-information",
+    "/cancellation-policy",
+    "/privacy-policy",
+    "/terms",
   ])
     assert.equal((await fetch(url + route)).status, 200, route);
   assert.equal((await fetch(url + "/packages/unknown")).status, 404);
+  assert.equal((await fetch(url + "/blog/unknown")).status, 404);
+  assert.equal((await fetch(url + "/unknown-page")).status, 404);
   assert.equal((await fetch(url + "/api/contact")).status, 405);
   assert.equal(
     (await post("newsletter", { email: "not-an-email" })).status,
@@ -46,10 +55,21 @@ test("routes, form validation and persistence", async (t) => {
     ).status,
     400,
   );
+  assert.equal(
+    (
+      await post("contact", {
+        email: "test@example.com",
+        name: "Test",
+        message: "Hello",
+        phone: "call me maybe",
+      })
+    ).status,
+    400,
+  );
   const booking = {
     email: "test@example.com",
     name: "Test",
-    trip: "komodo",
+    trip: "maldives",
     travellers: 2,
     date: "2090-02-12",
   };
@@ -65,7 +85,15 @@ test("routes, form validation and persistence", async (t) => {
     ["booking", booking],
     [
       "contact",
-      { email: booking.email, name: "Test", message: "Can we travel in May?" },
+      {
+        email: booking.email,
+        name: "Test",
+        message: "Can we travel in May?",
+        phone: "+91 98765 43210",
+        destination: "Maldives",
+        date: "2090-02-12",
+        travellers: 2,
+      },
     ],
     ["newsletter", { email: booking.email }],
   ]) {

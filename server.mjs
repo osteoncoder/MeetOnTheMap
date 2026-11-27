@@ -3,7 +3,9 @@ import { readFile, appendFile, mkdir } from "node:fs/promises";
 import { resolve, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { places } from "./public/catalog.js";
+import { posts, infoPages } from "./public/content.js";
 const root = fileURLToPath(new URL("./public/", import.meta.url));
+const infoSlugs = new Set(Object.keys(infoPages));
 const types = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
@@ -15,6 +17,17 @@ const types = {
 const kinds = new Set(["booking", "contact", "newsletter"]);
 const invalid = (message, status = 400) =>
   Object.assign(new Error(message), { status });
+const validDate = (date) => {
+  const t = new Date(date);
+  const now = new Date();
+  now.setUTCHours(0, 0, 0, 0);
+  return (
+    /^\d{4}-\d{2}-\d{2}$/.test(date) &&
+    Number.isFinite(+t) &&
+    t.toISOString().slice(0, 10) === date &&
+    t >= now
+  );
+};
 async function body(req) {
   let size = 0;
   const chunks = [];
@@ -45,6 +58,24 @@ export function validate(kind, data) {
   if (message.length > 2000 || (!message && kind === "contact"))
     throw invalid("Enter a message of up to 2,000 characters.");
   Object.assign(result, { name, message });
+  if (kind === "contact") {
+    const phone = text("phone"),
+      destination = text("destination"),
+      date = text("date");
+    if (phone && (phone.length > 20 || !/^[+\d][\d\s().-]{6,19}$/.test(phone)))
+      throw invalid("Enter a valid phone number.");
+    if (destination.length > 100)
+      throw invalid("Enter a destination of up to 100 characters.");
+    if (date && !validDate(date))
+      throw invalid("Choose a valid travel date today or later.");
+    const travellers =
+      data.travellers === undefined || data.travellers === ""
+        ? null
+        : Number(data.travellers);
+    if (travellers !== null && (!Number.isInteger(travellers) || travellers < 1 || travellers > 99))
+      throw invalid("Enter a number of travellers between 1 and 99.");
+    Object.assign(result, { phone, destination, date, travellers });
+  }
   if (kind === "booking") {
     const trip = places.find((p) => p.id === text("trip"));
     const travellers =
@@ -59,18 +90,8 @@ export function validate(kind, data) {
       travellers > trip.group
     )
       throw invalid("Select a valid trip and group size.");
-    if (date) {
-      const t = new Date(date);
-      const now = new Date();
-      now.setUTCHours(0, 0, 0, 0);
-      if (
-        !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
-        !Number.isFinite(+t) ||
-        t.toISOString().slice(0, 10) !== date ||
-        t < now
-      )
-        throw invalid("Choose a valid travel date today or later.");
-    }
+    if (date && !validDate(date))
+      throw invalid("Choose a valid travel date today or later.");
     Object.assign(result, { trip: trip.id, travellers, date });
   }
   return result;
@@ -122,12 +143,19 @@ export function buildServer({
       }
       const page = !extname(path);
       const segments = path.split("/").filter(Boolean);
+      const listingRoute =
+        ["destinations", "packages"].includes(segments[0]) &&
+        (segments.length === 1 ||
+          (segments.length === 2 &&
+            places.some((p) => p.id === segments[1])));
+      const blogRoute =
+        segments[0] === "blog" &&
+        (segments.length === 1 ||
+          (segments.length === 2 &&
+            posts.some((p) => p.slug === segments[1])));
+      const infoRoute = segments.length === 1 && infoSlugs.has(segments[0]);
       const exists =
-        !segments.length ||
-        (["destinations", "packages"].includes(segments[0]) &&
-          (segments.length === 1 ||
-            (segments.length === 2 &&
-              places.some((p) => p.id === segments[1]))));
+        !segments.length || listingRoute || blogRoute || infoRoute;
       const file = resolve(root, page ? "index.html" : "." + path);
       const type = types[extname(file)];
       if (!file.startsWith(root) || !type)
@@ -159,6 +187,6 @@ if (
 ) {
   const port = Number(process.env.PORT || 3000);
   buildServer().listen(port, "0.0.0.0", () =>
-    console.log(`Travelling Breez listening on ${port}`),
+    console.log(`Meet on the Map listening on ${port}`),
   );
 }
