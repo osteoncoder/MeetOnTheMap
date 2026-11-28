@@ -31,7 +31,7 @@ The brief suggests React, Vite and Tailwind. The site keeps this repository's ex
 
 The brief asks for these sample details to be replaced before going live:
 
-- **Prices, durations and itineraries** in `public/catalog.js` are sample figures. Check them against real operator rates.
+- **Prices, durations and itineraries** in `public/catalog.js` are sample figures. Prices are per person in Indian Rupees (₹), converted from the original US-dollar samples at about ₹85 = $1 and rounded. Check them against real operator rates.
 - **Policies.** The booking, cancellation, privacy and terms pages in `public/content.js` are general starter text, not legal advice. Have them reviewed for your business and jurisdiction.
 - **Business address.** No address is listed yet. Add one to the contact section if you want to show it.
 - **Testimonials.** The brief's sample quotes are deliberately left out. The section shows an honest empty state that invites reviews until real, consented guest reviews are available.

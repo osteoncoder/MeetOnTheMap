@@ -45,9 +45,9 @@ const icon = (name) =>
 const img = (p) => `/media/${p.id}.webp`;
 const placeLabel = (p) => (p.country ? `${p.name}, ${p.country}` : p.name);
 const money = (v) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     maximumFractionDigits: 0,
   }).format(v);
 const nav = [
