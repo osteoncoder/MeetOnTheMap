@@ -11,7 +11,7 @@ export const places = [
     bestTime: "April to October",
     tour: "The Soul of Bali",
     days: 6,
-    price: 690,
+    price: 59000,
     group: 8,
     stops: [
       "Arrive in Ubud and settle into your guesthouse",
@@ -34,7 +34,7 @@ export const places = [
     bestTime: "June to September",
     tour: "Alpine Wonder by Rail",
     days: 7,
-    price: 1690,
+    price: 144000,
     group: 10,
     stops: [
       "Arrive in Zurich and travel to lakeside Lucerne",
@@ -58,7 +58,7 @@ export const places = [
     bestTime: "April to June and September to October",
     tour: "A Parisian Escape",
     days: 4,
-    price: 890,
+    price: 76000,
     group: 8,
     stops: [
       "Arrive in Paris and settle in near the Seine",
@@ -79,7 +79,7 @@ export const places = [
     bestTime: "November to April",
     tour: "Maldives Island Retreat",
     days: 5,
-    price: 1790,
+    price: 152000,
     group: 6,
     stops: [
       "Speedboat transfer to your island resort",
@@ -101,7 +101,7 @@ export const places = [
     bestTime: "October to March",
     tour: "Incredible India Trail",
     days: 8,
-    price: 1290,
+    price: 110000,
     group: 12,
     stops: [
       "Arrive in Delhi and explore Old and New Delhi",
